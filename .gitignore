@@ -1,1 +1,21 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+*.exe
+*.dll
+*.pdb
+
+## Visual Studio cache & settings
 .vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## Database
+*.db
+*.db-shm
+*.db-wal
+
+## OS files
+.DS_Store
+Thumbs.db
