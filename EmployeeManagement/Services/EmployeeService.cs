@@ -17,6 +17,7 @@ namespace EmployeeManagement.Services
         public async Task<List<EmployeeDto>> GetAllEmployee()
         {
             return await _context.Employees
+                .OrderByDescending(e => e.CreatedAt)
                 .Select(e => new EmployeeDto(
                     e.Id,
                     e.Name,
