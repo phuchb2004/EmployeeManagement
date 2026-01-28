@@ -21,6 +21,7 @@ namespace EmployeeManagement.DTOs
         [EmailAddress(ErrorMessage = "Email incorrect format")]
         public string Email { get; init; } = string.Empty;
 
+        [Required(ErrorMessage = "Department is required")]
         public string Department { get; init; } = string.Empty;
 
         public DateTime DateOfBirth { get; init; }
