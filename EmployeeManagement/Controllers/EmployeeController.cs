@@ -120,8 +120,8 @@ namespace EmployeeManagement.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
         {
-            var employee = await _service.DeleteEmployee(id);
-            if (employee == null)
+            var IsExistedEmployee = await _service.DeleteEmployee(id);
+            if (!IsExistedEmployee)
             {
                 return NotFound(new {
                     message = $"Delete fail, employee with ID {id} is not found!"
