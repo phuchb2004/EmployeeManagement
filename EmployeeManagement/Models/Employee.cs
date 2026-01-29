@@ -15,5 +15,7 @@ namespace EmployeeManagement.Models
         public string Department { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime DeletedAt { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

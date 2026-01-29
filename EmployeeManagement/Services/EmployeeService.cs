@@ -51,6 +51,7 @@ namespace EmployeeManagement.Services
         public async Task<List<EmployeeDto>> GetAllEmployee()
         {
             return await _context.Employees
+                .Where(e => !e.IsDeleted)
                 .OrderByDescending(e => e.CreatedAt)
                 .Select(e => new EmployeeDto(
                     e.Id,
@@ -66,7 +67,7 @@ namespace EmployeeManagement.Services
         {
             var employee = await _context.Employees.FindAsync(id);
 
-            if (employee == null) 
+            if (employee == null || employee.IsDeleted) 
             {
                 return null;
             }
@@ -90,7 +91,8 @@ namespace EmployeeManagement.Services
                 Email = createdEmployee.Email,
                 Department = createdEmployee.Department,
                 DateOfBirth = createdEmployee.DateOfBirth,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                IsDeleted = false
             };
 
             _context.Employees.Add(newEmployee);
@@ -108,7 +110,7 @@ namespace EmployeeManagement.Services
         public async Task<EmployeeDto?> UpdateEmployee(int id, Employee updatedEmployee)
         {
             var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
+            if (employee == null || employee.IsDeleted)
             {
                 return null;
             }
@@ -133,12 +135,14 @@ namespace EmployeeManagement.Services
         public async Task<bool> DeleteEmployee(int id)
         {
             var isExistedEmployee = await _context.Employees.FindAsync(id);
-            if (isExistedEmployee == null)
+            if (isExistedEmployee == null || isExistedEmployee.IsDeleted)
             {
                 return false;
             }
 
-            _context.Employees.Remove(isExistedEmployee);
+            isExistedEmployee.IsDeleted = true;
+            isExistedEmployee.DeletedAt = DateTime.Now;
+
             await _context.SaveChangesAsync();
             return true;
         } 
