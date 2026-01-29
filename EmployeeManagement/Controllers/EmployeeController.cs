@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/employees")]
     [ApiController]
     public class EmployeeController : ControllerBase
     {
@@ -17,14 +17,14 @@ namespace EmployeeManagement.Controllers
             _service = service;
         }
 
-        [HttpGet("GetAllEmployee")]
+        [HttpGet]
         public async Task<ActionResult<List<EmployeeDto>>> GetAllEmployee()
         {
             var employees = await _service.GetAllEmployee();
             return Ok(employees);
         }
 
-        [HttpGet("GetEmployeeById")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeDto>> GetEmployeeById(int id)
         {
             var employee = await _service.GetEmployeeById(id);
@@ -38,7 +38,7 @@ namespace EmployeeManagement.Controllers
             return Ok(employee);
         }
 
-        [HttpPost("CreateEmployee")]
+        [HttpPost]
         public async Task<ActionResult<EmployeeDto>> CreateEmployee([FromBody] CreateEmployeeDto requestDto)
         {
             try
@@ -69,7 +69,7 @@ namespace EmployeeManagement.Controllers
 
         }
 
-        [HttpPut("UpdateEmployee")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto requestDto)
         {
             try
@@ -106,7 +106,7 @@ namespace EmployeeManagement.Controllers
             }
         }
 
-        [HttpDelete("DeleteEmployee")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
         {
             var employee = await _service.DeleteEmployee(id);
