@@ -41,45 +41,69 @@ namespace EmployeeManagement.Controllers
         [HttpPost("CreateEmployee")]
         public async Task<ActionResult<EmployeeDto>> CreateEmployee([FromBody] CreateEmployeeDto requestDto)
         {
-            var newEmployee = new Employee
+            try
             {
-                Name = requestDto.Name,
-                Email = requestDto.Email,
-                Department = requestDto.Department,
-                DateOfBirth = requestDto.DateOfBirth
-            };
+                var newEmployee = new Employee
+                {
+                    Name = requestDto.Name,
+                    Email = requestDto.Email,
+                    Department = requestDto.Department,
+                    DateOfBirth = requestDto.DateOfBirth
+                };
 
-            var createdEmployee = await _service.CreateEmployee(newEmployee);
-            return CreatedAtAction(nameof(GetEmployeeById), new { id = createdEmployee.Id }, new
+                var createdEmployee = await _service.CreateEmployee(newEmployee);
+
+                return CreatedAtAction(nameof(GetEmployeeById), new { id = createdEmployee.Id }, new
+                {
+                    message = "Employee Created!",
+                    createdEmployee
+                });
+            }
+            catch (Exception ex)
             {
-                message = "Employee Created!",
-                createdEmployee
-            });
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+
         }
 
         [HttpPut("UpdateEmployee")]
         public async Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto requestDto)
         {
-            var existedEmployee = new Employee
+            try
             {
-                Name = requestDto.Name,
-                Email = requestDto.Email,
-                Department = requestDto.Department,
-                DateOfBirth = requestDto.DateOfBirth
-            };
+                var existedEmployee = new Employee
+                {
+                    Name = requestDto.Name,
+                    Email = requestDto.Email,
+                    Department = requestDto.Department,
+                    DateOfBirth = requestDto.DateOfBirth
+                };
 
-            var updatedEmployee = await _service.UpdateEmployee(id, existedEmployee);
+                var updatedEmployee = await _service.UpdateEmployee(id, existedEmployee);
+                if (updatedEmployee == null)
+                {
+                    return NotFound(new
+                    {
+                        message = $"Update fail, employee with ID {id} is not found!"
+                    });
+                }
 
-            if (updatedEmployee == null)
-            {
-                return NotFound(new {
-                    message = $"Update fail, employee with ID {id} is not found!"
+                return Ok(new
+                {
+                    message = $"Employee {updatedEmployee.Name} is updated",
+                    updatedEmployee
                 });
             }
-            return Ok(new {
-                message = $"Employee {updatedEmployee.Name} is updated",
-                updatedEmployee
-            });
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpDelete("DeleteEmployee")]

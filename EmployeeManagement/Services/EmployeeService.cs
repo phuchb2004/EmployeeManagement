@@ -1,6 +1,7 @@
 ﻿using EmployeeManagement.Models;
 using EmployeeManagement.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace EmployeeManagement.Services
 {
@@ -8,10 +9,43 @@ namespace EmployeeManagement.Services
     {
 
         private readonly AppDbContext _context;
+        private static readonly Regex emailRegex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+        private const int MAX_NAME_LENGTH = 100;
 
         public EmployeeService(AppDbContext context)
         {
             _context = context;
+        }
+
+        private static void ValidateEmployee(Employee employee)
+        {
+            //Name
+            if (string.IsNullOrEmpty(employee.Name))
+            {
+                throw new ArgumentException("Name is required!");
+            }
+
+            if (employee.Name.Length > MAX_NAME_LENGTH)
+            {
+                throw new ArgumentException($"Employee name cannot exceed {MAX_NAME_LENGTH} characters");
+            }
+
+            //Email
+            if (string.IsNullOrEmpty(employee.Email))
+            {
+                throw new ArgumentException("Email is required!");
+            }
+
+            if (!emailRegex.IsMatch(employee.Email))
+            {
+                throw new ArgumentException("Invalid email, please input the correct format!");
+            }
+
+            //Department
+            if (string.IsNullOrEmpty(employee.Department))
+            {
+                throw new ArgumentException("Department is required!");
+            }
         }
 
         public async Task<List<EmployeeDto>> GetAllEmployee()
@@ -48,12 +82,15 @@ namespace EmployeeManagement.Services
 
         public async Task<EmployeeDto> CreateEmployee(Employee createdEmployee)
         {
+            ValidateEmployee(createdEmployee);
+
             var newEmployee = new Employee
             {
                 Name = createdEmployee.Name,
                 Email = createdEmployee.Email,
                 Department = createdEmployee.Department,
-                DateOfBirth = createdEmployee.DateOfBirth
+                DateOfBirth = createdEmployee.DateOfBirth,
+                CreatedAt = DateTime.Now
             };
 
             _context.Employees.Add(newEmployee);
@@ -75,6 +112,8 @@ namespace EmployeeManagement.Services
             {
                 return null;
             }
+
+            ValidateEmployee(updatedEmployee);
 
             employee.Name = updatedEmployee.Name;
             employee.Email = updatedEmployee.Email;
@@ -102,7 +141,7 @@ namespace EmployeeManagement.Services
             _context.Employees.Remove(isExistedEmployee);
             await _context.SaveChangesAsync();
             return true;
-        }
+        } 
 
     }
 }
