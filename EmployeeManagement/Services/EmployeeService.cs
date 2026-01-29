@@ -7,7 +7,6 @@ namespace EmployeeManagement.Services
 {
     public class EmployeeService
     {
-
         private readonly AppDbContext _context;
         private static readonly Regex emailRegex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
         private const int MAX_NAME_LENGTH = 100;
@@ -81,6 +80,21 @@ namespace EmployeeManagement.Services
             );
         }
 
+        public async Task<List<EmployeeDto>> GetEmployeeByDepartment(string department)
+        {
+            return await _context.Employees
+                .Where(e => e.Department == department && !e.IsDeleted)
+                .OrderByDescending(e => e.CreatedAt)
+                .Select(e => new EmployeeDto(
+                    e.Id,
+                    e.Name,
+                    e.Email,
+                    e.Department,
+                    e.DateOfBirth
+                ))
+                .ToListAsync();
+        }
+
         public async Task<EmployeeDto> CreateEmployee(Employee createdEmployee)
         {
             ValidateEmployee(createdEmployee);
@@ -145,7 +159,6 @@ namespace EmployeeManagement.Services
 
             await _context.SaveChangesAsync();
             return true;
-        } 
-
+        }
     }
 }

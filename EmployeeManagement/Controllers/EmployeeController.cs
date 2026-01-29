@@ -3,6 +3,7 @@ using EmployeeManagement.Services;
 using EmployeeManagement.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using EmployeeManagement.Models.Enums;
 
 namespace EmployeeManagement.Controllers
 {
@@ -24,7 +25,7 @@ namespace EmployeeManagement.Controllers
             return Ok(employees);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get-employee-by-id/{id}")]
         public async Task<ActionResult<EmployeeDto>> GetEmployeeById(int id)
         {
             var employee = await _service.GetEmployeeById(id);
@@ -36,6 +37,16 @@ namespace EmployeeManagement.Controllers
             }
 
             return Ok(employee);
+        }
+
+        [HttpGet("get-employee-by-department")]
+        public async Task<ActionResult<List<EmployeeDto>>> GetEmployeeByDepartment([FromQuery] DepartmentType department)
+        {
+            string departmentSelected = department.ToString();
+
+            var result = await _service.GetEmployeeByDepartment(departmentSelected);
+
+            return Ok(result);
         }
 
         [HttpPost]
