@@ -11,6 +11,7 @@ namespace EmployeeManagement.Services
         private readonly AppDbContext _context;
         private static readonly Regex emailRegex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
         private const int MAX_NAME_LENGTH = 100;
+        private const int PAGE_SIZE = 10;
 
         public EmployeeService(AppDbContext context)
         {
@@ -56,11 +57,15 @@ namespace EmployeeManagement.Services
             }
         }
 
-        public async Task<List<EmployeeDto>> GetAllEmployee()
+        public async Task<Pagination<EmployeeDto>> GetAllEmployee(int pageIndex)
         {
-            return await _context.Employees
-                .Where(e => !e.IsDeleted)
+            var query = _context.Employees.Where(e => !e.IsDeleted);
+            int totalCount = await query.CountAsync();
+
+            var items = await query
                 .OrderByDescending(e => e.CreatedAt)
+                .Skip((pageIndex - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
                 .Select(e => new EmployeeDto(
                     e.Id,
                     e.Name,
@@ -69,6 +74,8 @@ namespace EmployeeManagement.Services
                     e.DateOfBirth
                 ))
                 .ToListAsync();
+
+            return new Pagination<EmployeeDto>(items, totalCount, pageIndex, PAGE_SIZE);
         }
 
         public async Task<EmployeeDto?> GetEmployeeById(int id)

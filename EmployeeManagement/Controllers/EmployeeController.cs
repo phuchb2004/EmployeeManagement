@@ -19,10 +19,15 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<EmployeeDto>>> GetAllEmployee()
+        public async Task<ActionResult<Pagination<EmployeeDto>>> GetAllEmployee([FromQuery] int page = 1)
         {
-            var employees = await _service.GetAllEmployee();
-            return Ok(employees);
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            var result = await _service.GetAllEmployee(page);
+            return Ok(result);
         }
 
         [HttpGet("get-employee-by-id/{id}")]
