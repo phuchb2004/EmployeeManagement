@@ -2,6 +2,7 @@
 using EmployeeManagement.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using EmployeeManagement.Models.Enums;
 
 namespace EmployeeManagement.Services
 {
@@ -44,6 +45,14 @@ namespace EmployeeManagement.Services
             if (string.IsNullOrEmpty(employee.Department))
             {
                 throw new ArgumentException("Department is required!");
+            }
+
+            bool isValidDepartment = Enum.TryParse<DepartmentType>(employee.Department, true, out _);
+
+            if (!isValidDepartment)
+            {
+                string validDepartments = string.Join(", ", Enum.GetNames(typeof(DepartmentType)));
+                throw new ArgumentException($"Invalid department, please select the following department: {validDepartments}");
             }
         }
 
