@@ -45,11 +45,16 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpGet("get-employee-by-department")]
-        public async Task<ActionResult<List<EmployeeDto>>> GetEmployeeByDepartment([FromQuery] DepartmentType department)
+        public async Task<ActionResult<Pagination<EmployeeDto>>> GetEmployeeByDepartment([FromQuery] DepartmentType department, int page = 1)
         {
+            if (page < 1)
+            {
+                page = 1;
+            }
+
             string departmentSelected = department.ToString();
 
-            var result = await _service.GetEmployeeByDepartment(departmentSelected);
+            var result = await _service.GetEmployeeByDepartment(departmentSelected, page);
 
             return Ok(result);
         }

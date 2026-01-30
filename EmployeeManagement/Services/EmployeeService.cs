@@ -96,11 +96,17 @@ namespace EmployeeManagement.Services
             );
         }
 
-        public async Task<List<EmployeeDto>> GetEmployeeByDepartment(string department)
+        public async Task<Pagination<EmployeeDto>> GetEmployeeByDepartment(string department, int pageIndex)
         {
-            return await _context.Employees
-                .Where(e => e.Department == department && !e.IsDeleted)
+            var query = _context.Employees
+                .Where(e => !e.IsDeleted && e.Department == department);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .OrderByDescending(e => e.CreatedAt)
+                .Skip((pageIndex - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
                 .Select(e => new EmployeeDto(
                     e.Id,
                     e.Name,
@@ -109,6 +115,8 @@ namespace EmployeeManagement.Services
                     e.DateOfBirth
                 ))
                 .ToListAsync();
+
+            return new Pagination<EmployeeDto>(items, totalCount, pageIndex, PAGE_SIZE);
         }
 
         public async Task<EmployeeDto> CreateEmployee(Employee createdEmployee)
