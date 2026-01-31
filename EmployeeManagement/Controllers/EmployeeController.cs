@@ -87,7 +87,6 @@ namespace EmployeeManagement.Controllers
                     message = ex.Message
                 });
             }
-
         }
 
         [HttpPut("{id}")]
