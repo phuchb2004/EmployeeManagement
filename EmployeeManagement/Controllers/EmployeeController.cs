@@ -53,7 +53,6 @@ namespace EmployeeManagement.Controllers
             }
 
             string departmentSelected = department.ToString();
-
             var result = await _service.GetEmployeeByDepartment(departmentSelected, page);
 
             return Ok(result);

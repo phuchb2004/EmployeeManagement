@@ -16,6 +16,5 @@
             PageSize = pageSize;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         }
-
     }
 }

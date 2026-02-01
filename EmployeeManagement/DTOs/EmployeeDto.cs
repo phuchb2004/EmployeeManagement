@@ -2,7 +2,6 @@
 
 namespace EmployeeManagement.DTOs
 {
-
     public record EmployeeDto(
         int Id,
         string Name,
@@ -24,5 +23,4 @@ namespace EmployeeManagement.DTOs
     {
 
     }
-
 }
